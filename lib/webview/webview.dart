@@ -15,6 +15,7 @@ class WebViewLoad extends StatelessWidget {
       onPageFinished: (value) {
         onPageLoaded();
       },
+      zoomEnabled: false,
       initialUrl: "http://13.59.197.11/",
       javascriptMode: JavascriptMode.unrestricted,
     );
@@ -33,15 +34,13 @@ class WebViewLoad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Obx(
-          () => AnimatedCrossFade(
-            duration: const Duration(milliseconds: 500),
-            crossFadeState: showWidget.value,
-            firstChild: animatedSplash(),
-            secondChild: webView(),
-          ),
+    return Scaffold(
+      body: Obx(
+        () => AnimatedCrossFade(
+          duration: const Duration(milliseconds: 500),
+          crossFadeState: showWidget.value,
+          firstChild: animatedSplash(),
+          secondChild: SafeArea(child: webView()),
         ),
       ),
     );
