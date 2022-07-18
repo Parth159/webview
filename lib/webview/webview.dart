@@ -11,23 +11,27 @@ class WebViewLoad extends StatelessWidget {
   }
 
   Widget webView() {
-    return WebView(
-      onPageFinished: (value) {
-        onPageLoaded();
-      },
-      zoomEnabled: false,
-      initialUrl: "http://13.59.197.11/",
-      javascriptMode: JavascriptMode.unrestricted,
+    return SizedBox(
+      height: Get.height,
+      width: Get.width,
+      child: WebView(
+        onPageFinished: (value) {
+          onPageLoaded();
+        },
+        zoomEnabled: false,
+        initialUrl: "http://www.bbcsinfo.com/",
+        javascriptMode: JavascriptMode.unrestricted,
+      ),
     );
   }
 
   Widget animatedSplash() {
     return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("assets/gif/intro_splash.gif"),
-          fit: BoxFit.cover,
-        ),
+      height: Get.height,
+      width: Get.width,
+      child: Image.asset(
+        "assets/images/splash.png",
+        fit: BoxFit.fill,
       ),
     );
   }
@@ -36,11 +40,15 @@ class WebViewLoad extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(
-        () => AnimatedCrossFade(
-          duration: const Duration(milliseconds: 500),
-          crossFadeState: showWidget.value,
-          firstChild: animatedSplash(),
-          secondChild: SafeArea(child: webView()),
+        () => SizedBox(
+          height: Get.height,
+          width: Get.width,
+          child: AnimatedCrossFade(
+            duration: const Duration(milliseconds: 500),
+            crossFadeState: showWidget.value,
+            firstChild: animatedSplash(),
+            secondChild: SafeArea(child: webView()),
+          ),
         ),
       ),
     );
