@@ -1,43 +1,66 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewLoad extends StatelessWidget {
   final showWidget = CrossFadeState.showFirst.obs;
   WebViewLoad({Key? key}) : super(key: key);
-
-  void onPageLoaded() {
-    showWidget.value = CrossFadeState.showSecond;
-  }
+  late final WebViewController webViewController;
 
   Widget webView() {
     return SizedBox(
       height: Get.height,
       width: Get.width,
-      child: WebView(
-        onPageFinished: (value) {
-          onPageLoaded();
-        },
-        zoomEnabled: false,
-        initialUrl: "http://www.bbcsinfo.com/",
-        javascriptMode: JavascriptMode.unrestricted,
-      ),
+      child: WebViewWidget(controller: webViewController),
     );
   }
 
   Widget animatedSplash() {
-    return Container(
+    return SizedBox(
       height: Get.height,
       width: Get.width,
-      child: Image.asset(
-        "assets/images/splash.png",
-        fit: BoxFit.fill,
+      child: const Center(
+        child: CupertinoActivityIndicator(),
       ),
     );
   }
 
+  void initController() {
+    webViewController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {},
+          onPageStarted: (String url) {},
+          onPageFinished: (String url) {
+            showWidget.value = CrossFadeState.showSecond;
+          },
+          onHttpError: (HttpResponseError error) {},
+          onWebResourceError: (WebResourceError error) {},
+          onNavigationRequest: (NavigationRequest request) {
+            if (request.url.startsWith('https://mobile.fleetsoft.com/')) {
+              return NavigationDecision.navigate;
+            }
+            return NavigationDecision.prevent;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse('https://mobile.fleetsoft.com/'));
+  }
+
+  Future<void> permissionRequest() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.camera,
+      Permission.microphone,
+    ].request();
+  }
+
   @override
   Widget build(BuildContext context) {
+    initController();
+
     return Scaffold(
       body: Obx(
         () => SizedBox(
